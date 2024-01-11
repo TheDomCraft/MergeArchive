@@ -6,10 +6,11 @@ class MergeArchive
 {
     static void Main(string[] args)
     {
-        if (args.Length < 3 || (args[0] != "pack" && args[0] != "unpack"))
+        if (args.Length < 3 || (args[0] != "pack" && args[0] != "unpack" && args[0] != "list"))
         {
             Console.WriteLine("Usage: dotnet run pack <output.mar> <file1> <file2> ...");
             Console.WriteLine("Usage: dotnet run unpack <input.mar> <output_folder>");
+            Console.WriteLine("Usage: dotnet run list <input.mar>");
             return;
         }
 
@@ -26,6 +27,10 @@ class MergeArchive
         {
             string outputFolder = args[2];
             Unpack(archiveName, outputFolder);
+        }
+        else if (command == "list")
+        {
+            ListContents(archiveName);
         }
     }
 
@@ -71,5 +76,25 @@ class MergeArchive
             }
         }
         Console.WriteLine($"Unpacked {archiveName} to {outputFolder}");
+    }
+
+    static void ListContents(string archiveName)
+    {
+        using (FileStream fsIn = File.OpenRead(archiveName))
+        {
+            using (GZipStream gzStream = new GZipStream(fsIn, CompressionMode.Decompress))
+            {
+                using (BinaryReader reader = new BinaryReader(gzStream))
+                {
+                    while (reader.BaseStream.Position != reader.BaseStream.Length)
+                    {
+                        int fileSize = reader.ReadInt32();
+                        string fileName = reader.ReadString();
+                        Console.WriteLine($"{fileName} - {fileSize} bytes");
+                        reader.BaseStream.Seek(fileSize, SeekOrigin.Current); // Skip the file content
+                    }
+                }
+            }
+        }
     }
 }
