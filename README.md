@@ -20,6 +20,14 @@ To unpack files from a MergeArchive:
 dotnet run unpack myarchive.mar output_folder
 ```
 
+### List Contents
+
+To list the contents of a tar-like archive:
+
+```
+dotnet run list myarchive.mar
+```
+
 ### Code Explanation
 
 The code consists of a simple C# console application with two main functionalities:
@@ -33,6 +41,10 @@ The code consists of a simple C# console application with two main functionaliti
 
     - The `Unpack` method extracts files from the tar-like archive to a specified output folder.
     - It reads the archive, recreates the files, and stores them in the output folder.
+
+3. Listing Contents:
+
+    - The ListContents method displays the names and sizes of files within the tar-like archive.
 
 ### Requirements
 
